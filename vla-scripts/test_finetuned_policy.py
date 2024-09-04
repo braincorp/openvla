@@ -1,6 +1,5 @@
-"""Make sure the fine-tuned policy performs as expected"""
+"""Script to make sure the fine-tuned policy performs as expected."""
 import os
-import pdb
 
 import numpy as np
 import torch
@@ -30,7 +29,7 @@ def get_datasets_dir_path() -> str:
     return os.path.expanduser('~/brawn_artifacts/datasets/widowx_250s/episodes_pick_mustard')
 
 
-def validate_finetuned_policy(
+def test_finetuned_policy(
         checkpoint_name: str = DEFAULT_CHECKPOINT_NAME,
         dataset_name: str = DEFAULT_DATASET_NAME,
         device_name: str = DEFAULT_DEVICE_NAME
@@ -137,12 +136,10 @@ def validate_finetuned_policy(
         image_match = bool((image == image_recovered).all())
 
         if not input_ids_match:
-            print('input ids mismatch!')
-            pdb.set_trace()
+            raise RuntimeError('input ids mismatch!')
 
         if not image_match:
-            print('image mismatch!')
-            pdb.set_trace()
+            raise RuntimeError('image mismatch!')
 
         generated_ids = vla.generate(
             pixel_values=network_inputs['pixel_values'],
@@ -163,8 +160,7 @@ def validate_finetuned_policy(
             f"Action accuracy (policy): {accuracy_policy}"
         )
         if action_tokens_training[0] == action_tokens_gt[0] and (action_tokens_policy[0] != action_tokens_gt[0]):
-            print(f'first policy token does not match!')
-            pdb.set_trace()
+            raise RuntimeError(f'first policy token does not match!')
 
         if batch_idx == max_batches:
             break
@@ -175,4 +171,4 @@ def validate_finetuned_policy(
 
 
 if __name__ == '__main__':
-    validate_finetuned_policy()
+    test_finetuned_policy()
