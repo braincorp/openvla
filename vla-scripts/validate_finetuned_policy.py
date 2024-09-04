@@ -1,5 +1,6 @@
-"""Make sure the fine-tuned policy performs as expected."""
+"""Make sure the fine-tuned policy performs as expected"""
 import os
+import pdb
 
 import numpy as np
 import torch
@@ -12,7 +13,6 @@ from prismatic.models.backbones.llm.prompting import PurePromptBuilder
 from prismatic.util.data_utils import PaddedCollatorForActionPrediction
 from prismatic.vla.action_tokenizer import ActionTokenizer
 from prismatic.vla.datasets import RLDSBatchTransform, RLDSDataset
-import pdb
 
 ATTENTION_IMPLEMENTATION_NAME = "flash_attention_2"
 DEFAULT_DEVICE_NAME = "cuda:0"
@@ -34,8 +34,8 @@ def validate_finetuned_policy(
         checkpoint_name: str = DEFAULT_CHECKPOINT_NAME,
         dataset_name: str = DEFAULT_DATASET_NAME,
         device_name: str = DEFAULT_DEVICE_NAME
-):
-    """Test that the fine-tuned policy performs as expected."""
+) -> None:
+    """Make sure the fine-tuned policy performs as expected."""
     checkpoint_path = os.path.join(get_checkpoints_dir_path(), checkpoint_name)
     dataset_dir_path = get_datasets_dir_path()
 
@@ -95,7 +95,6 @@ def validate_finetuned_policy(
         labels = batch["labels"].to(device_name)
 
         # Generate tokens the way it's done during training
-        # TODO: Why does pixel_values have 6 channels?
         output: CausalLMOutputWithPast = vla(
             pixel_values=pixel_values,
             input_ids=input_ids,
