@@ -12,6 +12,7 @@ from prismatic.models.backbones.llm.prompting import PurePromptBuilder
 from prismatic.util.data_utils import PaddedCollatorForActionPrediction
 from prismatic.vla.action_tokenizer import ActionTokenizer
 from prismatic.vla.datasets import RLDSBatchTransform, RLDSDataset
+import pdb
 
 ATTENTION_IMPLEMENTATION_NAME = "flash_attention_2"
 DEFAULT_DEVICE_NAME = "cuda:0"
@@ -93,6 +94,7 @@ def validate_finetuned_policy(
         pixel_values = batch["pixel_values"].to(torch.bfloat16).to(device_name)
         labels = batch["labels"].to(device_name)
 
+        # Generate tokens the way it's done during training
         # TODO: Why does pixel_values have 6 channels?
         output: CausalLMOutputWithPast = vla(
             pixel_values=pixel_values,
@@ -113,26 +115,42 @@ def validate_finetuned_policy(
         accuracies.append(action_accuracy.item())
 
         # Generate tokens the way it's done in the policy
-        image = np.interp(
-            batch["pixel_values"][0][3:].numpy().transpose(1, 2, 0),
+        image = np.round(np.interp(
+            pixel_values[0][3:].to(torch.float32).cpu().numpy().transpose(1, 2, 0),
             (-1, 1),
             (0, 255)
-        ).astype(np.uint8)
+        )).astype(np.uint8)
         instruction = processor.decode(input_ids[0][10:-13], skip_special_tokens=True)
         image_pil = Image.fromarray(image)
         network_inputs = processor(
-            f"In: What action should the robot take to {instruction.lower()}?\nOut:",
+            f"In: What action should the robot take to {instruction.lower()}?\nOut: ",  # note space at end!
             image_pil
         ).to(device_name, dtype=torch.bfloat16)
         unnorm_key = 'episodes_pick_mustard_rlds'
-        input_ids_match = bool((input_ids[0, :-9] == network_inputs['input_ids'][0]).all().cpu().numpy())
-        print(f'input ids match: {input_ids_match}')
+
+        # Validate inputs are the same
+        input_ids_match = bool((input_ids[0, :-8] == network_inputs['input_ids'][0]).all().cpu().numpy())
+        image_recovered = np.round(np.interp(
+            network_inputs['pixel_values'][0][3:].to(torch.float32).cpu().numpy().transpose(1, 2, 0),
+            (-1, 1),
+            (0, 255)
+        )).astype(np.uint8)
+        image_match = bool((image == image_recovered).all())
+
+        if not input_ids_match:
+            print('input ids mismatch!')
+            pdb.set_trace()
+
+        if not image_match:
+            print('image mismatch!')
+            pdb.set_trace()
 
         generated_ids = vla.generate(
             pixel_values=network_inputs['pixel_values'],
-            input_ids=input_ids[:, :-8],  # network_inputs['input_ids'],
+            input_ids=network_inputs['input_ids'],
             attention_mask=network_inputs['attention_mask'],
-            max_new_tokens=7)
+            max_new_tokens=7
+        )
 
         action_tokens_training = action_preds.to('cpu').numpy()[0][mask.to('cpu').numpy()[0]]
         action_tokens_policy = generated_ids[0, -vla.get_action_dim(unnorm_key):].cpu().numpy()
@@ -142,12 +160,12 @@ def validate_finetuned_policy(
         accuracies_policy.append(accuracy_policy)
 
         print(
-            f"Batch {batch_idx} Loss: {loss.item()}, Action Accuracy: {action_accuracy.item()}, "
-            f"Action Accuracy (policy): {accuracy_policy}"
+            f"Batch {batch_idx} Loss: {loss.item()}, Action accuracy: {action_accuracy.item()}, "
+            f"Action accuracy (policy): {accuracy_policy}"
         )
         if action_tokens_training[0] == action_tokens_gt[0] and (action_tokens_policy[0] != action_tokens_gt[0]):
             print(f'first policy token does not match!')
-            import pdb; pdb.set_trace()
+            pdb.set_trace()
 
         if batch_idx == max_batches:
             break
