@@ -28,11 +28,6 @@ from prismatic.vla.datasets.rlds.utils.data_utils import (
 )
 
 
-def episodes_pick_mustard_rlds_transform(trajectory: Dict[str, Any]) -> Dict[str, Any]:
-    trajectory["action"] = trajectory["action"]["action_vector"]
-    return trajectory
-
-
 def bridge_oxe_dataset_transform(trajectory: Dict[str, Any]) -> Dict[str, Any]:
     """
     Applies to version of Bridge V2 in Open X-Embodiment mixture.
@@ -829,9 +824,18 @@ def tdroid_dataset_transform(trajectory: Dict[str, Any]) -> Dict[str, Any]:
     return trajectory
 
 
+def episodes_pick_mustard_rlds_transform(trajectory: Dict[str, Any]) -> Dict[str, Any]:
+    trajectory["action"] = trajectory["action"]["action_vector"]
+    return trajectory
+
+
+def episodes_pick_mustard_easy_rlds_transform(trajectory: Dict[str, Any]) -> Dict[str, Any]:
+    trajectory["action"] = trajectory["action"]["action_vector"]
+    return trajectory
+
+
 # === Registry ===
 OXE_STANDARDIZATION_TRANSFORMS = {
-    "episodes_pick_mustard_rlds": episodes_pick_mustard_rlds_transform,
     "bridge_oxe": bridge_oxe_dataset_transform,
     "bridge_orig": bridge_orig_dataset_transform,
     "bridge_dataset": bridge_orig_dataset_transform,
@@ -903,4 +907,7 @@ OXE_STANDARDIZATION_TRANSFORMS = {
     "tdroid_cover_object_with_towel": tdroid_dataset_transform,
     ### DROID Finetuning datasets
     "droid_wipe": droid_finetuning_transform,
+    ### Brawn fine-tuning datasets
+    "episodes_pick_mustard_rlds": episodes_pick_mustard_rlds_transform,
+    "episodes_pick_mustard_easy_rlds": episodes_pick_mustard_easy_rlds_transform,
 }
