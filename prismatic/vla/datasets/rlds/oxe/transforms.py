@@ -844,6 +844,11 @@ def episodes_pick_mustard_easy_gripper_subsampled_rlds_transform(trajectory: Dic
     return trajectory
 
 
+def episodes_pick_bottled_sugar_lab_first_60_openvla_rlds_transform(trajectory: Dict[str, Any]) -> Dict[str, Any]:
+    trajectory["action"] = trajectory["action"]["action_vector"]
+    return trajectory
+
+
 # === Registry ===
 OXE_STANDARDIZATION_TRANSFORMS = {
     "bridge_oxe": bridge_oxe_dataset_transform,
@@ -922,4 +927,5 @@ OXE_STANDARDIZATION_TRANSFORMS = {
     "episodes_pick_mustard_easy_rlds": episodes_pick_mustard_easy_rlds_transform,
     "episodes_pick_mustard_easy_gripper_rlds": episodes_pick_mustard_easy_gripper_rlds_transform,
     "episodes_pick_mustard_easy_gripper_subsampled_rlds": episodes_pick_mustard_easy_gripper_subsampled_rlds_transform,
+    "episodes_pick_bottled_sugar_lab_first_60_openvla_rlds": episodes_pick_bottled_sugar_lab_first_60_openvla_rlds_transform,
 }
