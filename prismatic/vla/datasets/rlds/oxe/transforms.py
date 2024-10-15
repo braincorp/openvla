@@ -824,27 +824,7 @@ def tdroid_dataset_transform(trajectory: Dict[str, Any]) -> Dict[str, Any]:
     return trajectory
 
 
-def episodes_pick_mustard_rlds_transform(trajectory: Dict[str, Any]) -> Dict[str, Any]:
-    trajectory["action"] = trajectory["action"]["action_vector"]
-    return trajectory
-
-
-def episodes_pick_mustard_easy_rlds_transform(trajectory: Dict[str, Any]) -> Dict[str, Any]:
-    trajectory["action"] = trajectory["action"]["action_vector"]
-    return trajectory
-
-
-def episodes_pick_mustard_easy_gripper_rlds_transform(trajectory: Dict[str, Any]) -> Dict[str, Any]:
-    trajectory["action"] = trajectory["action"]["action_vector"]
-    return trajectory
-
-
-def episodes_pick_mustard_easy_gripper_subsampled_rlds_transform(trajectory: Dict[str, Any]) -> Dict[str, Any]:
-    trajectory["action"] = trajectory["action"]["action_vector"]
-    return trajectory
-
-
-def episodes_pick_bottled_sugar_lab_first_60_openvla_rlds_transform(trajectory: Dict[str, Any]) -> Dict[str, Any]:
+def brawn_dataset_transform(trajectory: Dict[str, Any]) -> Dict[str, Any]:
     trajectory["action"] = trajectory["action"]["action_vector"]
     return trajectory
 
@@ -923,9 +903,10 @@ OXE_STANDARDIZATION_TRANSFORMS = {
     ### DROID Finetuning datasets
     "droid_wipe": droid_finetuning_transform,
     ### Brawn fine-tuning datasets
-    "episodes_pick_mustard_rlds": episodes_pick_mustard_rlds_transform,
-    "episodes_pick_mustard_easy_rlds": episodes_pick_mustard_easy_rlds_transform,
-    "episodes_pick_mustard_easy_gripper_rlds": episodes_pick_mustard_easy_gripper_rlds_transform,
-    "episodes_pick_mustard_easy_gripper_subsampled_rlds": episodes_pick_mustard_easy_gripper_subsampled_rlds_transform,
-    "episodes_pick_bottled_sugar_lab_first_60_openvla_rlds": episodes_pick_bottled_sugar_lab_first_60_openvla_rlds_transform,
+    "episodes_pick_mustard_rlds": brawn_dataset_transform,
+    "episodes_pick_mustard_easy_rlds": brawn_dataset_transform,
+    "episodes_pick_mustard_easy_gripper_rlds": brawn_dataset_transform,
+    "episodes_pick_mustard_easy_gripper_subsampled_rlds": brawn_dataset_transform,
+    "episodes_pick_bottled_sugar_lab_first_60_openvla_rlds": brawn_dataset_transform,
+    "episodes_pick_bottled_sugar_lab_simplified_instruction_openvla_rlds": brawn_dataset_transform,
 }
