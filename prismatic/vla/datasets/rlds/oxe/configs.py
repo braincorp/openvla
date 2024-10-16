@@ -684,4 +684,11 @@ OXE_DATASET_CONFIGS = {
         "state_encoding": StateEncoding.NONE,
         "action_encoding": ActionEncoding.EEF_POS,
     },
+    "episodes_pick_bottled_sugar_lab_above_default_openvla_rlds": {
+        "image_obs_keys": {"primary": "static_rgb_image", "secondary": None, "wrist": None},
+        "depth_obs_keys": {"primary": None, "secondary": None, "wrist": None},
+        "state_obs_keys": [None],
+        "state_encoding": StateEncoding.NONE,
+        "action_encoding": ActionEncoding.EEF_POS,
+    },
 }

@@ -909,4 +909,5 @@ OXE_STANDARDIZATION_TRANSFORMS = {
     "episodes_pick_mustard_easy_gripper_subsampled_rlds": brawn_dataset_transform,
     "episodes_pick_bottled_sugar_lab_first_60_openvla_rlds": brawn_dataset_transform,
     "episodes_pick_bottled_sugar_lab_simplified_instruction_openvla_rlds": brawn_dataset_transform,
+    "episodes_pick_bottled_sugar_lab_above_default_openvla_rlds": brawn_dataset_transform,
 }
